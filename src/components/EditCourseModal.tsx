@@ -31,6 +31,7 @@ export default function EditCourseModal({
   const [description, setDescription] = useState("");
   const [endDate, setEndDate] = useState("");
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +42,7 @@ export default function EditCourseModal({
 
   const handleUpdateCourse = async () => {
     try {
+      setIsLoading(true);
       const formData = new FormData();
       formData.append("course[title]", title || course?.title || "");
       formData.append(
@@ -61,10 +63,13 @@ export default function EditCourseModal({
         );
       });
 
-      const res = await fetch(`http://localhost:5000/courses/${courseId}`, {
-        method: "PUT",
-        body: formData,
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/courses/${courseId}`,
+        {
+          method: "PUT",
+          body: formData,
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to update course");
 
@@ -86,13 +91,17 @@ export default function EditCourseModal({
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/courses/${courseId}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/courses/${courseId}`
+        );
         if (!res.ok) throw new Error("Failed to fetch course");
         const data: Course = await res.json();
         setCourse(data);
@@ -155,7 +164,12 @@ export default function EditCourseModal({
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={handleUpdateCourse} colorScheme="blue" mr={3}>
+          <Button
+            onClick={handleUpdateCourse}
+            colorScheme="blue"
+            mr={3}
+            disabled={isLoading}
+          >
             Salvar
           </Button>
           <Button onClick={onClose}>Cancelar</Button>

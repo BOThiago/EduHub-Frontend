@@ -9,7 +9,7 @@ export default function Dashboard({ selectedPage }: { selectedPage: string }) {
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch("http://localhost:5000/courses");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/courses`);
       if (!res.ok) {
         throw new Error("Failed to fetch courses");
       }
@@ -32,6 +32,7 @@ export default function Dashboard({ selectedPage }: { selectedPage: string }) {
       alignItems="center"
       textAlign="center"
       gap={20}
+      w="full"
     >
       {selectedPage === "Cursos" && (
         <Courses courses={courses} refetchCourses={fetchCourses} />

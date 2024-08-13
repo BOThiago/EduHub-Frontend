@@ -9,10 +9,10 @@ import {
   Button,
   Text,
   Box,
+  Image,
 } from "@chakra-ui/react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { Course } from "../types/courses.types";
-import ReactPlayer from "react-player";
 
 export function CourseCard({
   course,
@@ -34,26 +34,16 @@ export function CourseCard({
         flexDirection="column"
         alignItems="center"
       >
-        {course.course_files && course.course_files.length > 0 ? (
+        {course.course_banner_url ? (
           <Box shadow="xl">
-            <ReactPlayer
+            <Image
               width={300}
               height={165}
-              controls={true}
-              url={course.course_files[0].file_url}
+              src={`${import.meta.env.VITE_API_URL}${course.course_banner_url}`}
             />
           </Box>
         ) : (
-          <Box
-            width={300}
-            height={165}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bg="gray.200"
-          >
-            <Text>Vídeo não disponível</Text>
-          </Box>
+          ""
         )}
         <Stack mt="6" spacing="3">
           <Heading size="md">{course.title}</Heading>

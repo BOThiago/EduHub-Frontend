@@ -30,9 +30,12 @@ export default function DeleteCourseModal({
 
   const handleDeleteCourse = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/courses/${courseId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/courses/${courseId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (!res.ok) throw new Error("Failed to delete course !");
 
       refetchCourses();
@@ -60,7 +63,9 @@ export default function DeleteCourseModal({
     if (isOpen) {
       const fetchCourses = async () => {
         try {
-          const res = await fetch(`http://localhost:5000/courses/${courseId}`);
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/courses/${courseId}`
+          );
           if (!res.ok) throw new Error("Failed to fetch courses");
           const data: Course = await res.json();
           setCourses(data);

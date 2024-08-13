@@ -2,6 +2,7 @@ export interface Course {
   id?: number;
   title: string;
   description: string;
+  course_banner_url?: string;
   updated_at?: string;
   end_date?: string;
   created_at?: string;

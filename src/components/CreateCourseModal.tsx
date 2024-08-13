@@ -33,22 +33,34 @@ export default function CreateCourseModal({
   const [description, setDescription] = useState("");
   const [end_date, setEndDate] = useState("");
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
+  const [courseBanner, setCourseBanner] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
-    e.target.files = null;
     if (e.target.files) {
       setVideoFiles(Array.from(e.target.files));
     }
   };
 
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setCourseBanner(e.target.files[0]);
+    }
+  };
+
   const handleCreateCourse = async () => {
     try {
+      setIsLoading(true);
       const formData = new FormData();
       formData.append("course[title]", title);
       formData.append("course[description]", description);
       formData.append("course[end_date]", end_date);
+
+      if (courseBanner) {
+        formData.append("course[course_banner]", courseBanner);
+      }
+
       videoFiles.forEach((file, index) => {
         formData.append(
           `course[course_files_attributes][${index}][name]`,
@@ -60,7 +72,7 @@ export default function CreateCourseModal({
         );
       });
 
-      const res = await fetch("http://localhost:5000/courses", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/courses`, {
         method: "POST",
         body: formData,
       });
@@ -85,6 +97,8 @@ export default function CreateCourseModal({
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,6 +133,21 @@ export default function CreateCourseModal({
               onChange={(e) => setEndDate(e.target.value)}
             />
           </FormControl>
+          <FormControl id="banner">
+            <FormLabel>Banner do Curso</FormLabel>
+            <InputGroup>
+              <InputLeftElement
+                pointerEvents="none"
+                children={<Icon as={FiFile} />}
+              />
+              <Input
+                id="banner-uploader"
+                type="file"
+                accept="image/*"
+                onChange={handleBannerChange}
+              />
+            </InputGroup>
+          </FormControl>
           <FormControl id="videos" isRequired>
             <FormLabel>Suba os Vídeos</FormLabel>
             <InputGroup>
@@ -132,13 +161,17 @@ export default function CreateCourseModal({
                 accept="video/*"
                 multiple
                 onChange={handleFileChange}
-                // onClick={() => inputRef.current && inputRef.current.click()}
               />
             </InputGroup>
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="green" mr={3} onClick={handleCreateCourse}>
+          <Button
+            disabled={isLoading}
+            colorScheme="green"
+            mr={3}
+            onClick={handleCreateCourse}
+          >
             Criar curso
           </Button>
           <Button variant="ghost" onClick={onClose}>

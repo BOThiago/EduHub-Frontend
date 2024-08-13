@@ -31,7 +31,9 @@ export default function ShowCourseModal({
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/courses/${courseId}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/courses/${courseId}`
+        );
         if (!res.ok) throw new Error("Failed to fetch courses");
         const data: Course = await res.json();
         setCourses(data);
@@ -62,13 +64,26 @@ export default function ShowCourseModal({
             flexDirection="column"
             gap={4}
           >
-            <Text fontWeight="bold">{course.course_files[0].name}</Text>
-            <ReactPlayer
-              width={300}
-              height={165}
-              controls={true}
-              url={`http://localhost:5000/${course.course_files[0].file_url}`}
-            />
+            {course.course_files.map((file, index) => (
+              <Flex
+                key={index}
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+                gap={4}
+                mb={4}
+              >
+                <Text maxW="80%" fontWeight="bold">
+                  {file.name}
+                </Text>
+                <ReactPlayer
+                  width={300}
+                  height={165}
+                  controls={true}
+                  url={`${import.meta.env.VITE_API_URL}${file.file_url}`}
+                />
+              </Flex>
+            ))}
           </Flex>
         ) : (
           <Flex
@@ -78,7 +93,7 @@ export default function ShowCourseModal({
             alignItems="center"
             justifyContent="center"
           >
-            <Text fontWeight="bold">Vídeo não encontrado</Text>
+            <Text fontWeight="bold">Esse curso não possui vídeos</Text>
           </Flex>
         )}
         <ModalBody>
