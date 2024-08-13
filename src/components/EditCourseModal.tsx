@@ -31,12 +31,19 @@ export default function EditCourseModal({
   const [description, setDescription] = useState("");
   const [endDate, setEndDate] = useState("");
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
+  const [courseBanner, setCourseBanner] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setVideoFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setCourseBanner(e.target.files[0]);
     }
   };
 
@@ -51,6 +58,10 @@ export default function EditCourseModal({
       );
       formData.append("course[end_date]", endDate || course?.end_date || "");
       formData.append("course[updated_at]", new Date().toISOString());
+
+      if (courseBanner) {
+        formData.append("course[course_banner]", courseBanner);
+      }
 
       videoFiles.forEach((file, index) => {
         formData.append(
@@ -151,6 +162,14 @@ export default function EditCourseModal({
               defaultValue={course?.end_date}
               type="date"
               placeholder="Data de Término"
+            />
+          </FormControl>
+          <FormControl mt={4}>
+            <FormLabel>Upload de Novo Banner</FormLabel>
+            <Input
+              type="file"
+              accept="image/png, image/jpeg, image/gif"
+              onChange={handleBannerChange}
             />
           </FormControl>
           <FormControl mt={4}>

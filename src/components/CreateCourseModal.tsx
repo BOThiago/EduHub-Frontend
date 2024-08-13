@@ -143,7 +143,7 @@ export default function CreateCourseModal({
               <Input
                 id="banner-uploader"
                 type="file"
-                accept="image/*"
+                accept="image/png, image/jpeg, image/gif"
                 onChange={handleBannerChange}
               />
             </InputGroup>
